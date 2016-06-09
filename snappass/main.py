@@ -1,6 +1,6 @@
 import os
 import uuid
-
+import base64
 import redis
 
 from flask import abort, Flask, render_template, request
@@ -17,15 +17,16 @@ redis_host = os.environ.get('REDIS_HOST', 'localhost')
 redis_client = redis.StrictRedis(host=redis_host, port=6379, db=0)
 
 time_conversion = {
-    'week': 604800,
-    'day': 86400,
-    'hour': 3600
+    '15 minutes': 900,
+    '30 minutes': 1800,
+    '1 hour': 3600,
+    '5 hour': 18000
 }
 
 
 def set_password(password, ttl):
     key = id_()
-    redis_client.set(key, password)
+    redis_client.set(key, base64.b64encode(password))
     redis_client.expire(key, ttl)
     return key
 
@@ -33,7 +34,7 @@ def set_password(password, ttl):
 def get_password(key):
     password = redis_client.get(key)
     redis_client.delete(key)
-    return password
+    return base64.b64decode(password)
 
 
 def clean_input():
