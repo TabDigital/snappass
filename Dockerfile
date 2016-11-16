@@ -6,4 +6,5 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 WORKDIR /app/snappass
 ENTRYPOINT ["python"]
+EXPOSE 5000
 CMD ["main.py"]
